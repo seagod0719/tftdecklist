@@ -106,6 +106,48 @@
       border-radius: 6px;
       font-size: 14px;
     }
+    /* 덱 항목 내부 레이아웃 */
+    .tier-item {
+      padding: 12px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .comp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .comp-units {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    /* 복사 버튼 */
+    .copy-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+
+    .copy-btn:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 <body>
@@ -205,36 +247,40 @@
 <script>
     async function loadMetaTFT() {
       try {
-        // 1. Vercel API 호출
         const response = await fetch('/api/metatft');
         const jsonData = await response.json();
-
-        // 2. 정확한 데이터 위치 찾기 (cluster_details 안의 객체들을 배열로 변환)
         const comps = Object.values(jsonData.results.data.cluster_details);
 
         const ssList = document.getElementById('meta-ss-list');
         const sList = document.getElementById('meta-s-list');
         const aList = document.getElementById('meta-a-list');
 
-        // 로딩 텍스트 초기화
         ssList.innerHTML = '';
         sList.innerHTML = '';
         aList.innerHTML = '';
 
-        // 3. 덱 리스트 순회
         comps.forEach(comp => {
-          // 덱 이름 가져오기 및 지저분한 개발자 코드(DA_18_ 등) 깔끔하게 지우기
+          // 덱 이름 정제
           let compName = comp.name_string || '이름 없는 덱';
-          compName = compName.replace(/DA_18_|DA_|_AP|_AD|18/g, '').replace(/_/g, ' '); 
+          compName = compName.replace(/DA_18_|DA_|_AP|_AD|18/g, '').replace(/_/g, ' ');
 
-          // 평균 등수 가져오기 (예: 4.3027)
+          // 유닛 리스트 정제 (예: "Aphelios, Diana, Varus...")
+          let unitsRaw = comp.units_string || '유닛 정보 없음';
+          let cleanUnits = unitsRaw.replace(/DA_18_|DA_|_AP|_AD|18/g, '').replace(/_/g, ' ');
+
           const avgPlacement = comp.overall ? comp.overall.avg : 5.0;
-          
+
+          // HTML 요소 생성 (이름, 복사 버튼, 유닛 리스트)
           const li = document.createElement('li');
           li.className = 'tier-item';
-          li.textContent = `${compName} (평균 ${avgPlacement.toFixed(2)}등)`;
+          li.innerHTML = `
+            <div class="comp-header">
+              <span>${compName} <span style="font-weight:400; font-size:12px; color:#888;">(평균 ${avgPlacement.toFixed(2)}등)</span></span>
+              <button class="copy-btn" onclick="copyTeam('${cleanUnits}')">유닛 복사</button>
+            </div>
+            <div class="comp-units">${cleanUnits}</div>
+          `;
 
-          // 4. 평균 등수에 따라 티어 분류 (기준: 4.2등 미만 SS, 4.4등 미만 S, 그 외 A)
           if (avgPlacement < 4.2) {
             ssList.appendChild(li);
           } else if (avgPlacement < 4.4) {
@@ -244,7 +290,6 @@
           }
         });
         
-        // 데이터가 없는 칸 처리
         if(ssList.children.length === 0) ssList.innerHTML = '<li class="tier-item">데이터 없음</li>';
         if(sList.children.length === 0) sList.innerHTML = '<li class="tier-item">데이터 없음</li>';
         if(aList.children.length === 0) aList.innerHTML = '<li class="tier-item">데이터 없음</li>';
@@ -255,7 +300,15 @@
       }
     }
 
-    // 페이지가 열리면 자동으로 데이터를 불러옵니다.
+    // 복사 버튼을 눌렀을 때 실행되는 함수
+    function copyTeam(units) {
+      navigator.clipboard.writeText(units).then(() => {
+        alert('덱 유닛이 복사되었습니다!\\n' + units);
+      }).catch(err => {
+        alert('복사 중 오류가 발생했습니다.');
+      });
+    }
+
     window.onload = function() {
       loadMetaTFT();
     };
