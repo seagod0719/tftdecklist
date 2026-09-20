@@ -148,6 +148,23 @@
     .copy-btn:hover {
       background-color: #555;
     }
+    a { color: inherit; text-decoration: none; }
+    .sidebar { flex-shrink: 0; }
+    .sidebar-note { padding: 16px 24px; font-size: 12px; color: #666; line-height: 1.6; }
+    .main-content { min-width: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .column { min-width: 0; gap: 22px; }
+    .site-title { margin-bottom: 0; }
+    .source-status { font-size: 12px; color: #666; line-height: 1.6; overflow-wrap: anywhere; }
+    .comp-header { flex-wrap: wrap; gap: 8px; line-height: 1.5; }
+    .comp-units { display: flex; flex-wrap: wrap; gap: 5px; }
+    .unit { border: 1px solid #ddd; border-radius: 4px; padding: 3px 5px; background: #fff; }
+    .code-field { width: 100%; padding: 6px; font-size: 11px; border: 1px solid #ddd; background: #fff; }
+    .copy-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .comp-note { font-size: 11px; color: #666; overflow-wrap: anywhere; }
+    .source-link { text-decoration: underline; font-size: 12px; }
+    .retry-btn { margin-left: 8px; padding: 3px 8px; cursor: pointer; }
+    @media (max-width: 1100px) { .sidebar { width: 170px; } .main-content { padding: 6px; } .column { padding: 12px; } }
+    @media (max-width: 760px) { body { display: block; } .sidebar { position: static; width: 100%; height: auto; border-right: 0; } .sidebar h1 { margin-bottom: 12px; } .main-content { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -156,10 +173,12 @@
   <aside class="sidebar">
     <h1>TFT ALL-IN-ONE</h1>
     <div class="menu-item active">덱리스트</div>
-    <div class="menu-item">유물리스트</div>
-    <div class="menu-item">상징 리스트</div>
-    <div class="menu-item">유닛 통계</div>
-    <div class="menu-item">팀 빌더</div>
+    <a class="menu-item" href="https://tftable.cc/item-tierlist" target="_blank" rel="noopener noreferrer">유물 티어 ↗</a>
+    <a class="menu-item" href="https://tftable.cc/item-tierlist#emblems" target="_blank" rel="noopener noreferrer">상징 티어 ↗</a>
+    <a class="menu-item" href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">유닛 통계 ↗</a>
+    <a class="menu-item" href="https://www.metatft.com/team-builder" target="_blank" rel="noopener noreferrer">팀 빌더 ↗</a>
+    <p class="sidebar-note">↗ 메뉴는 원본 사이트로 이동합니다.</p>
+    <p class="sidebar-note" id="copy-status" role="status" aria-live="polite"></p>
   </aside>
 
   <!-- 메인 영역 (3단 분할) -->
@@ -171,21 +190,21 @@
       
       <div class="tier-section">
         <h3><span style="color: #ff4e50;">SS</span> 리스트</h3>
-        <ul class="tier-list" id="meta-ss-list">
+        <ul class="tier-list" id="metatft-ss-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
       
       <div class="tier-section">
         <h3><span style="color: #f9a826;">S</span> 리스트</h3>
-        <ul class="tier-list" id="meta-s-list">
+        <ul class="tier-list" id="metatft-s-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
 
       <div class="tier-section">
         <h3><span style="color: #4a90e2;">A</span> 리스트</h3>
-        <ul class="tier-list" id="meta-a-list">
+        <ul class="tier-list" id="metatft-a-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
@@ -244,75 +263,6 @@
     </div>
 
   </main>
-<script>
-    async function loadMetaTFT() {
-      try {
-        const response = await fetch('/api/metatft');
-        const jsonData = await response.json();
-        const comps = Object.values(jsonData.results.data.cluster_details);
-
-        const ssList = document.getElementById('meta-ss-list');
-        const sList = document.getElementById('meta-s-list');
-        const aList = document.getElementById('meta-a-list');
-
-        ssList.innerHTML = '';
-        sList.innerHTML = '';
-        aList.innerHTML = '';
-
-        comps.forEach(comp => {
-          // 덱 이름 정제
-          let compName = comp.name_string || '이름 없는 덱';
-          compName = compName.replace(/DA_18_|DA_|_AP|_AD|18/g, '').replace(/_/g, ' ');
-
-          // 유닛 리스트 정제 (예: "Aphelios, Diana, Varus...")
-          let unitsRaw = comp.units_string || '유닛 정보 없음';
-          let cleanUnits = unitsRaw.replace(/DA_18_|DA_|_AP|_AD|18/g, '').replace(/_/g, ' ');
-
-          const avgPlacement = comp.overall ? comp.overall.avg : 5.0;
-
-          // HTML 요소 생성 (이름, 복사 버튼, 유닛 리스트)
-          const li = document.createElement('li');
-          li.className = 'tier-item';
-          li.innerHTML = `
-            <div class="comp-header">
-              <span>${compName} <span style="font-weight:400; font-size:12px; color:#888;">(평균 ${avgPlacement.toFixed(2)}등)</span></span>
-              <button class="copy-btn" onclick="copyTeam('${cleanUnits}')">유닛 복사</button>
-            </div>
-            <div class="comp-units">${cleanUnits}</div>
-          `;
-
-          if (avgPlacement < 4.2) {
-            ssList.appendChild(li);
-          } else if (avgPlacement < 4.4) {
-            sList.appendChild(li);
-          } else {
-            aList.appendChild(li);
-          }
-        });
-        
-        if(ssList.children.length === 0) ssList.innerHTML = '<li class="tier-item">데이터 없음</li>';
-        if(sList.children.length === 0) sList.innerHTML = '<li class="tier-item">데이터 없음</li>';
-        if(aList.children.length === 0) aList.innerHTML = '<li class="tier-item">데이터 없음</li>';
-
-      } catch (error) {
-        console.error("MetaTFT 로딩 에러:", error);
-        document.getElementById('meta-ss-list').innerHTML = '<li class="tier-item">불러오기 실패</li>';
-      }
-    }
-
-    // 복사 버튼을 눌렀을 때 실행되는 함수
-    function copyTeam(units) {
-      navigator.clipboard.writeText(units).then(() => {
-        alert('덱 유닛이 복사되었습니다!\\n' + units);
-      }).catch(err => {
-        alert('복사 중 오류가 발생했습니다.');
-      });
-    }
-
-    window.onload = function() {
-      loadMetaTFT();
-    };
-  </script>
-</body>
+<script type="module" src="/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,4 @@
+.research/
+.vercel/
+node_modules/
+.env*

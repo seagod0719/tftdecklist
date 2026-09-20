@@ -1,0 +1,13 @@
+{
+  "name": "tft-decklist",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "test": "node --test --test-isolation=none",
+    "test:live": "node scripts/check-live.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
