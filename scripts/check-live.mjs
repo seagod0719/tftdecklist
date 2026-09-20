@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { loadSource } from '../lib/sources.js';
+import { loadItems } from '../lib/items.js';
 await Promise.all(['metatft', 'academy', 'qq'].map(async source => {
   const data = await loadSource(source);
   assert.ok(data.comps.length, `${source}: empty response`);
@@ -11,3 +12,10 @@ await Promise.all(['metatft', 'academy', 'qq'].map(async source => {
   }
   console.log(`${source}: ${data.comps.length} decks, ${data.comps.filter(c => c.teamCode).length} team codes`);
 }));
+const items = await loadItems();
+for (const type of ['artifacts', 'emblems']) {
+  const rows = Object.values(items.tabs[type]).flat();
+  assert.ok(rows.length > 0);
+  assert.ok(rows.every(row => row.name && row.icon && Array.isArray(row.comps)));
+  console.log(`${type}: ${new Set(rows.map(row => row.id)).size} items`);
+}

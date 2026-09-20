@@ -158,7 +158,22 @@
     .comp-header { flex-wrap: wrap; gap: 8px; line-height: 1.5; }
     .comp-units { display: flex; flex-wrap: wrap; gap: 5px; }
     .unit { border: 1px solid #ddd; border-radius: 4px; padding: 3px 5px; background: #fff; }
-    .code-field { width: 100%; padding: 6px; font-size: 11px; border: 1px solid #ddd; background: #fff; }
+    [hidden] { display: none !important; }
+    .comp-meta { display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
+    .copy-btn { padding: 3px 6px; font-size: 10px; }
+    .unit { display: flex; flex-direction: column; align-items: center; width: 57px; text-align: center; gap: 4px; font-size: 10px; }
+    .unit img { object-fit: cover; border-radius: 4px; }
+    #items-view { flex: 1; min-width: 0; padding: 24px; background: #fff; }
+    #items-view > * { margin-bottom: 18px; }
+    .item-tier h3 { margin: 24px 0 12px; }
+    .item-tier.op h3 { color: #987300; }
+    .item-tier.good h3 { color: #493ed4; }
+    .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .item-heading, .recommendation { display: flex; align-items: center; gap: 10px; }
+    .recommendation { font-size: 12px; line-height: 1.5; }
+    .recommendation img { width: 28px; height: 28px; }
+    .item-heading img, .recommendation img { border-radius: 5px; object-fit: cover; }
+    #copy-status:not(:empty) { position: fixed; bottom: 16px; left: 16px; max-width: 360px; background: #222; color: white; border-radius: 6px; z-index: 10; }
     .copy-btn:disabled { opacity: .45; cursor: not-allowed; }
     .comp-note { font-size: 11px; color: #666; overflow-wrap: anywhere; }
     .source-link { text-decoration: underline; font-size: 12px; }
@@ -172,9 +187,9 @@
   <!-- 사이드바 -->
   <aside class="sidebar">
     <h1>TFT ALL-IN-ONE</h1>
-    <div class="menu-item active">덱리스트</div>
-    <a class="menu-item" href="https://tftable.cc/item-tierlist" target="_blank" rel="noopener noreferrer">유물 티어 ↗</a>
-    <a class="menu-item" href="https://tftable.cc/item-tierlist#emblems" target="_blank" rel="noopener noreferrer">상징 티어 ↗</a>
+    <a class="menu-item active" href="#comps" data-view="comps">덱리스트</a>
+    <a class="menu-item" href="#artifacts" data-view="artifacts">유물 티어</a>
+    <a class="menu-item" href="#emblems" data-view="emblems">상징 티어</a>
     <a class="menu-item" href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">유닛 통계 ↗</a>
     <a class="menu-item" href="https://www.metatft.com/team-builder" target="_blank" rel="noopener noreferrer">팀 빌더 ↗</a>
     <p class="sidebar-note">↗ 메뉴는 원본 사이트로 이동합니다.</p>
@@ -182,7 +197,7 @@
   </aside>
 
   <!-- 메인 영역 (3단 분할) -->
-  <main class="main-content">
+  <main class="main-content" id="comps-view">
     
     <!-- 1. MetaTFT 컬럼 -->
     <div class="column">
@@ -263,6 +278,7 @@
     </div>
 
   </main>
+<main id="items-view" hidden></main>
 <script type="module" src="/app.js"></script>
 </body>
 </html>
