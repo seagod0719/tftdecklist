@@ -205,13 +205,12 @@
 <script>
     async function loadMetaTFT() {
       try {
-        // 1. 우리가 만든 Vercel API 호출
+        // 1. Vercel API 호출
         const response = await fetch('/api/metatft');
-        const data = await response.json();
+        const jsonData = await response.json();
 
-        // 2. 데이터 구조 파악 (배열을 찾음)
-        // MetaTFT JSON 구조에 따라 배열이 들어있는 정확한 위치를 찾아야 합니다.
-        const comps = Array.isArray(data) ? data : (data.comps || data.data || Object.values(data)[0] || []);
+        // 2. 정확한 데이터 위치 찾기 (cluster_details 안의 객체들을 배열로 변환)
+        const comps = Object.values(jsonData.results.data.cluster_details);
 
         const ssList = document.getElementById('meta-ss-list');
         const sList = document.getElementById('meta-s-list');
@@ -222,22 +221,25 @@
         sList.innerHTML = '';
         aList.innerHTML = '';
 
-        // 3. 덱 리스트 순회 및 티어별 분류
+        // 3. 덱 리스트 순회
         comps.forEach(comp => {
-          // ⚠️ 주의: 실제 API의 필드명(tier, name 등)을 브라우저 미리보기(Preview) 탭에서 확인 후 아래 이름을 정확히 맞춰주어야 합니다.
-          const tier = comp.tier || ''; 
-          const compName = comp.name || comp.comp_name || '이름 없는 덱';
+          // 덱 이름 가져오기 및 지저분한 개발자 코드(DA_18_ 등) 깔끔하게 지우기
+          let compName = comp.name_string || '이름 없는 덱';
+          compName = compName.replace(/DA_18_|DA_|_AP|_AD|18/g, '').replace(/_/g, ' '); 
+
+          // 평균 등수 가져오기 (예: 4.3027)
+          const avgPlacement = comp.overall ? comp.overall.avg : 5.0;
           
           const li = document.createElement('li');
           li.className = 'tier-item';
-          li.textContent = compName;
+          li.textContent = `${compName} (평균 ${avgPlacement.toFixed(2)}등)`;
 
-          // 티어 조건 분류 (S+, S, A 등 문자열이나 0, 1, 2 등 숫자에 맞춰 수정)
-          if (tier === 'S+' || tier === 'SS') {
+          // 4. 평균 등수에 따라 티어 분류 (기준: 4.2등 미만 SS, 4.4등 미만 S, 그 외 A)
+          if (avgPlacement < 4.2) {
             ssList.appendChild(li);
-          } else if (tier === 'S') {
+          } else if (avgPlacement < 4.4) {
             sList.appendChild(li);
-          } else if (tier === 'A') {
+          } else {
             aList.appendChild(li);
           }
         });
