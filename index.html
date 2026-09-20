@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TFT 메타 애그리게이터</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    /* 좌측 사이드바 영역 */
+    .sidebar {
+      width: 240px;
+      background-color: #fff;
+      border-right: 2px solid #000; /* 스케치 느낌 살리기 */
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar h1 {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 0 20px;
+    }
+
+    .menu-item {
+      padding: 15px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border-left: 4px solid transparent;
+      transition: background-color 0.2s;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background-color: #f0f0f0;
+      border-left-color: #222;
+    }
+
+    /* 우측 메인 콘텐츠 영역 */
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 정확히 3등분 */
+      gap: 2px; /* 검은색 경계선 효과를 위한 여백 */
+      background-color: #000; /* 바탕을 검은색으로 깔고 */
+    }
+
+    /* 각각의 사이트 컬럼 */
+    .column {
+      background-color: #fff; /* 내부를 하얗게 채워 경계선 만들기 */
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .site-title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 15px;
+      border: 2px solid #000;
+      margin-bottom: 20px;
+    }
+
+    /* 티어 리스트 영역 */
+    .tier-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #222;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tier-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tier-item {
+      padding: 12px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <h1>TFT ALL-IN-ONE</h1>
+    <div class="menu-item active">덱리스트</div>
+    <div class="menu-item">유물리스트</div>
+    <div class="menu-item">상징 리스트</div>
+    <div class="menu-item">유닛 통계</div>
+    <div class="menu-item">팀 빌더</div>
+  </aside>
+
+  <!-- 메인 영역 (3단 분할) -->
+  <main class="main-content">
+    
+    <!-- 1. MetaTFT 컬럼 -->
+    <div class="column">
+      <div class="site-title">MetaTFT</div>
+      
+      <div class="tier-section">
+        <h3><span style="color: #ff4e50;">SS</span> 리스트</h3>
+        <ul class="tier-list" id="meta-ss-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+      
+      <div class="tier-section">
+        <h3><span style="color: #f9a826;">S</span> 리스트</h3>
+        <ul class="tier-list" id="meta-s-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+
+      <div class="tier-section">
+        <h3><span style="color: #4a90e2;">A</span> 리스트</h3>
+        <ul class="tier-list" id="meta-a-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. TFT Academy 컬럼 -->
+    <div class="column">
+      <div class="site-title">TFT Academy</div>
+      
+      <div class="tier-section">
+        <h3><span style="color: #ff4e50;">SS</span> 리스트</h3>
+        <ul class="tier-list" id="academy-ss-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+      
+      <div class="tier-section">
+        <h3><span style="color: #f9a826;">S</span> 리스트</h3>
+        <ul class="tier-list" id="academy-s-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+
+      <div class="tier-section">
+        <h3><span style="color: #4a90e2;">A</span> 리스트</h3>
+        <ul class="tier-list" id="academy-a-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. LOL QQ 컬럼 -->
+    <div class="column">
+      <div class="site-title">LOL QQ</div>
+      
+      <div class="tier-section">
+        <h3><span style="color: #ff4e50;">SS</span> 리스트</h3>
+        <ul class="tier-list" id="qq-ss-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+      
+      <div class="tier-section">
+        <h3><span style="color: #f9a826;">S</span> 리스트</h3>
+        <ul class="tier-list" id="qq-s-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+
+      <div class="tier-section">
+        <h3><span style="color: #4a90e2;">A</span> 리스트</h3>
+        <ul class="tier-list" id="qq-a-list">
+          <li class="tier-item">로딩 중...</li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+<script>
+    async function loadMetaTFT() {
+      try {
+        // 1. 우리가 만든 Vercel API 호출
+        const response = await fetch('/api/metatft');
+        const data = await response.json();
+
+        // 2. 데이터 구조 파악 (배열을 찾음)
+        // MetaTFT JSON 구조에 따라 배열이 들어있는 정확한 위치를 찾아야 합니다.
+        const comps = Array.isArray(data) ? data : (data.comps || data.data || Object.values(data)[0] || []);
+
+        const ssList = document.getElementById('meta-ss-list');
+        const sList = document.getElementById('meta-s-list');
+        const aList = document.getElementById('meta-a-list');
+
+        // 로딩 텍스트 초기화
+        ssList.innerHTML = '';
+        sList.innerHTML = '';
+        aList.innerHTML = '';
+
+        // 3. 덱 리스트 순회 및 티어별 분류
+        comps.forEach(comp => {
+          // ⚠️ 주의: 실제 API의 필드명(tier, name 등)을 브라우저 미리보기(Preview) 탭에서 확인 후 아래 이름을 정확히 맞춰주어야 합니다.
+          const tier = comp.tier || ''; 
+          const compName = comp.name || comp.comp_name || '이름 없는 덱';
+          
+          const li = document.createElement('li');
+          li.className = 'tier-item';
+          li.textContent = compName;
+
+          // 티어 조건 분류 (S+, S, A 등 문자열이나 0, 1, 2 등 숫자에 맞춰 수정)
+          if (tier === 'S+' || tier === 'SS') {
+            ssList.appendChild(li);
+          } else if (tier === 'S') {
+            sList.appendChild(li);
+          } else if (tier === 'A') {
+            aList.appendChild(li);
+          }
+        });
+        
+        // 데이터가 없는 칸 처리
+        if(ssList.children.length === 0) ssList.innerHTML = '<li class="tier-item">데이터 없음</li>';
+        if(sList.children.length === 0) sList.innerHTML = '<li class="tier-item">데이터 없음</li>';
+        if(aList.children.length === 0) aList.innerHTML = '<li class="tier-item">데이터 없음</li>';
+
+      } catch (error) {
+        console.error("MetaTFT 로딩 에러:", error);
+        document.getElementById('meta-ss-list').innerHTML = '<li class="tier-item">불러오기 실패</li>';
+      }
+    }
+
+    // 페이지가 열리면 자동으로 데이터를 불러옵니다.
+    window.onload = function() {
+      loadMetaTFT();
+    };
+  </script>
+</body>
+</body>
+</html>
