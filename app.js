@@ -125,16 +125,61 @@ async function showItems(type) {
     itemPanel.replaceChildren(element('p', `불러오기 실패: ${error.message}`), retry);
   }
 }
+const winsPanel = document.getElementById('recent-wins-view');
+let winsData, winsRequest;
+async function showRecentWins(refresh = false) {
+  winsPanel.replaceChildren(element('h2', '최근 우승 TOP 5'), element('p', '전체 지역의 최근 우승 기록 200개를 분석하는 중…', 'source-status'));
+  try {
+    if (refresh) winsData = null;
+    if (!winsData) {
+      winsRequest ||= fetch('/api/recent-wins', { signal: AbortSignal.timeout(55000) }).then(async response => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || '불러오기 실패');
+        if (!Array.isArray(data.comps)) throw new Error('잘못된 우승 덱 응답입니다.');
+        return data;
+      }).finally(() => { winsRequest = null; });
+      winsData = await winsRequest;
+    }
+    if (location.hash !== '#recent-wins') return;
+    const link = element('a', '롤체지지 최근 1위 덱 ↗', 'source-link');
+    link.href = 'https://lolchess.gg/recent-win-decks'; link.target = '_blank'; link.rel = 'noopener noreferrer';
+    const refreshButton = element('button', '새로고침', 'retry-btn');
+    refreshButton.addEventListener('click', () => showRecentWins(true));
+    const actions = element('div'); actions.append(link, refreshButton);
+    winsPanel.replaceChildren(element('h2', '최근 우승 TOP 5'), actions,
+      element('p', `전체 ${winsData.regionCount}개 지역 · 최근 우승 ${winsData.sampleSize}경기 분석 · ${new Date(winsData.oldestAt).toLocaleString('ko-KR')} ~ ${new Date(winsData.newestAt).toLocaleString('ko-KR')}`, 'source-status'),
+      element('p', winsData.method, 'source-status'),
+      element('p', '롤체지지가 공개한 상위 랭크 우승 기록 기준입니다. 비율은 우승 표본 내 점유율이며 전체 게임 승률이 아닙니다. 그룹별 최신 우승 덱을 대표 구성으로 표시합니다.', 'source-status'),
+      element('p', `수집 ${new Date(winsData.fetchedAt).toLocaleString('ko-KR')} · 5분 캐시`, 'source-status'));
+    if (winsData.warning) winsPanel.append(element('p', winsData.warning, 'source-status'));
+    const list = element('ol', '', 'tier-list');
+    winsData.comps.forEach(comp => {
+      const row = card(comp);
+      row.prepend(element('p', `1등 ${comp.wins}회 · 표본의 ${(comp.sampleShare * 100).toFixed(1)}%`, 'win-count'));
+      row.append(element('p', `공통 ${comp.coreUnits.length}종: ${comp.coreUnits.map(u => u.name).join(' · ')} · ${comp.set}`, 'comp-note'));
+      list.append(row);
+    });
+    winsPanel.append(list);
+    if (winsData.comps.length < 5) winsPanel.append(element('p', `6종 이상 겹치는 우승 기록이 2개 이상인 그룹은 ${winsData.comps.length}개입니다.`, 'source-status'));
+  } catch (error) {
+    if (location.hash !== '#recent-wins') return;
+    const retry = element('button', '다시 시도', 'retry-btn');
+    retry.addEventListener('click', () => showRecentWins(true));
+    winsPanel.replaceChildren(element('h2', '최근 우승 TOP 5'), element('p', error.message, 'source-status'), retry);
+  }
+}
 function navigate() {
-  const view = ['#artifacts', '#emblems'].includes(location.hash) ? location.hash.slice(1) : 'comps';
+  const view = ['#artifacts', '#emblems', '#recent-wins'].includes(location.hash) ? location.hash.slice(1) : 'comps';
   document.getElementById('comps-view').hidden = view !== 'comps';
-  itemPanel.hidden = view === 'comps';
+  itemPanel.hidden = !['artifacts', 'emblems'].includes(view);
+  winsPanel.hidden = view !== 'recent-wins';
   document.querySelectorAll('[data-view]').forEach(link => {
     const active = link.dataset.view === view;
     link.classList.toggle('active', active);
     if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
   });
-  if (view !== 'comps') showItems(view);
+  if (view === 'recent-wins') showRecentWins();
+  else if (view !== 'comps') showItems(view);
 }
 window.addEventListener('hashchange', navigate);
 navigate();

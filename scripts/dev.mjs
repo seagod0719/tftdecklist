@@ -2,14 +2,15 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { sourceHandler } from '../lib/sources.js';
 import itemsHandler from '../lib/items.js';
+import recentWinsHandler from '../lib/recent-wins.js';
 const staticFiles = { '/': ['index.html', 'text/html'], '/index.html': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'] };
 createServer(async (req, res) => {
   const path = new URL(req.url, 'http://localhost').pathname;
-  const source = path.match(/^\/api\/(metatft|academy|qq|items)$/)?.[1];
+  const source = path.match(/^\/api\/(metatft|academy|qq|items|recent-wins)$/)?.[1];
   if (source) {
     res.status = code => { res.statusCode = code; return res; };
     res.json = value => { res.setHeader('Content-Type', 'application/json; charset=utf-8'); res.end(JSON.stringify(value)); };
-    return (source === 'items' ? itemsHandler : sourceHandler(source))(req, res);
+    return (source === 'recent-wins' ? recentWinsHandler : source === 'items' ? itemsHandler : sourceHandler(source))(req, res);
   }
   if (!staticFiles[path]) { res.writeHead(404); return res.end('Not found'); }
   const [file, type] = staticFiles[path];

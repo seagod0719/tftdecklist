@@ -165,6 +165,9 @@
     .unit img { object-fit: cover; border-radius: 4px; }
     #items-view { flex: 1; min-width: 0; padding: 24px; background: #fff; }
     #items-view > * { margin-bottom: 18px; }
+    #recent-wins-view { flex: 1; min-width: 0; padding: 24px; background: #fff; }
+    #recent-wins-view > * { margin-bottom: 18px; }
+    .win-count { font-size: 16px; font-weight: 700; color: #493ed4; }
     .item-tier h3 { margin: 24px 0 12px; }
     .item-tier.op h3 { color: #987300; }
     .item-tier.good h3 { color: #493ed4; }
@@ -188,6 +191,7 @@
   <aside class="sidebar">
     <h1>TFT ALL-IN-ONE</h1>
     <a class="menu-item active" href="#comps" data-view="comps">덱리스트</a>
+    <a class="menu-item" href="#recent-wins" data-view="recent-wins">최근 우승 TOP 5</a>
     <a class="menu-item" href="#artifacts" data-view="artifacts">유물 티어</a>
     <a class="menu-item" href="#emblems" data-view="emblems">상징 티어</a>
     <a class="menu-item" href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">유닛 통계 ↗</a>
@@ -279,6 +283,7 @@
 
   </main>
 <main id="items-view" hidden></main>
+<main id="recent-wins-view" hidden aria-live="polite"></main>
 <script type="module" src="/app.js"></script>
 </body>
 </html>
