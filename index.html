@@ -4,204 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TFT 메타 애그리게이터</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
-    }
-
-    body {
-      display: flex;
-      min-height: 100vh;
-      background-color: #f5f5f5;
-      color: #333;
-    }
-
-    /* 좌측 사이드바 영역 */
-    .sidebar {
-      width: 240px;
-      background-color: #fff;
-      border-right: 2px solid #000; /* 스케치 느낌 살리기 */
-      padding: 20px 0;
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-    }
-
-    .sidebar h1 {
-      font-size: 20px;
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 0 20px;
-    }
-
-    .menu-item {
-      padding: 15px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      border-left: 4px solid transparent;
-      transition: background-color 0.2s;
-    }
-
-    .menu-item:hover, .menu-item.active {
-      background-color: #f0f0f0;
-      border-left-color: #222;
-    }
-
-    /* 우측 메인 콘텐츠 영역 */
-    .main-content {
-      flex: 1;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 정확히 3등분 */
-      gap: 2px; /* 검은색 경계선 효과를 위한 여백 */
-      background-color: #000; /* 바탕을 검은색으로 깔고 */
-    }
-
-    /* 각각의 사이트 컬럼 */
-    .column {
-      background-color: #fff; /* 내부를 하얗게 채워 경계선 만들기 */
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
-
-    .site-title {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      padding: 15px;
-      border: 2px solid #000;
-      margin-bottom: 20px;
-    }
-
-    /* 티어 리스트 영역 */
-    .tier-section h3 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 15px;
-      color: #222;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tier-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .tier-item {
-      padding: 12px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    /* 덱 항목 내부 레이아웃 */
-    .tier-item {
-      padding: 12px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .comp-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-    }
-
-    .comp-units {
-      font-size: 12px;
-      color: #666;
-      line-height: 1.4;
-      word-break: keep-all;
-    }
-
-    /* 복사 버튼 */
-    .copy-btn {
-      padding: 4px 10px;
-      font-size: 11px;
-      background-color: #222;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background-color 0.2s;
-    }
-
-    .copy-btn:hover {
-      background-color: #555;
-    }
-    a { color: inherit; text-decoration: none; }
-    .sidebar { flex-shrink: 0; }
-    .sidebar-note { padding: 16px 24px; font-size: 12px; color: #666; line-height: 1.6; }
-    .main-content { min-width: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .column { min-width: 0; gap: 22px; }
-    .site-title { margin-bottom: 0; }
-    .source-status { font-size: 12px; color: #666; line-height: 1.6; overflow-wrap: anywhere; }
-    .comp-header { flex-wrap: wrap; gap: 8px; line-height: 1.5; }
-    .comp-units { display: flex; flex-wrap: wrap; gap: 5px; }
-    .unit { border: 1px solid #ddd; border-radius: 4px; padding: 3px 5px; background: #fff; }
-    [hidden] { display: none !important; }
-    .comp-meta { display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
-    .copy-btn { padding: 3px 6px; font-size: 10px; }
-    .unit { display: flex; flex-direction: column; align-items: center; width: 57px; text-align: center; gap: 4px; font-size: 10px; }
-    .unit img { object-fit: cover; border-radius: 4px; }
-    #items-view { flex: 1; min-width: 0; padding: 24px; background: #fff; }
-    #items-view > * { margin-bottom: 18px; }
-    #recent-wins-view { flex: 1; min-width: 0; padding: 24px; background: #fff; }
-    #recent-wins-view > * { margin-bottom: 18px; }
-    .win-count { font-size: 16px; font-weight: 700; color: #493ed4; }
-    .item-tier h3 { margin: 24px 0 12px; }
-    .item-tier.op h3 { color: #987300; }
-    .item-tier.good h3 { color: #493ed4; }
-    .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-    .item-heading, .recommendation { display: flex; align-items: center; gap: 10px; }
-    .recommendation { font-size: 12px; line-height: 1.5; }
-    .recommendation img { width: 28px; height: 28px; }
-    .item-heading img, .recommendation img { border-radius: 5px; object-fit: cover; }
-    #copy-status:not(:empty) { position: fixed; bottom: 16px; left: 16px; max-width: 360px; background: #222; color: white; border-radius: 6px; z-index: 10; }
-    .copy-btn:disabled { opacity: .45; cursor: not-allowed; }
-    .comp-note { font-size: 11px; color: #666; overflow-wrap: anywhere; }
-    .source-link { text-decoration: underline; font-size: 12px; }
-    .retry-btn { margin-left: 8px; padding: 3px 8px; cursor: pointer; }
-    @media (max-width: 1100px) { .sidebar { width: 170px; } .main-content { padding: 6px; } .column { padding: 12px; } }
-    @media (max-width: 760px) { body { display: block; } .sidebar { position: static; width: 100%; height: auto; border-right: 0; } .sidebar h1 { margin-bottom: 12px; } .main-content { grid-template-columns: 1fr; } }
-  </style>
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
 
-  <!-- 사이드바 -->
+  <!-- 탐색 메뉴 -->
   <aside class="sidebar">
-    <h1>TFT ALL-IN-ONE</h1>
-    <a class="menu-item active" href="#comps" data-view="comps">덱리스트</a>
-    <a class="menu-item" href="#recent-wins" data-view="recent-wins">최근 우승 TOP 5</a>
-    <a class="menu-item" href="#artifacts" data-view="artifacts">유물 티어</a>
-    <a class="menu-item" href="#emblems" data-view="emblems">상징 티어</a>
-    <a class="menu-item" href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">유닛 통계 ↗</a>
-    <a class="menu-item" href="https://www.metatft.com/team-builder" target="_blank" rel="noopener noreferrer">팀 빌더 ↗</a>
-    <p class="sidebar-note">↗ 메뉴는 원본 사이트로 이동합니다.</p>
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">T</span>
+      <div>
+        <h1>TFT ALL-IN-ONE</h1>
+        <span class="brand-caption">META COMPANION</span>
+      </div>
+    </div>
+    <span class="sidebar-label">DASHBOARD</span>
+    <nav aria-label="주요 메뉴">
+      <a class="menu-item active" href="#comps" data-view="comps"><span class="menu-symbol" aria-hidden="true">▦</span>덱리스트</a>
+      <a class="menu-item" href="#recent-wins" data-view="recent-wins"><span class="menu-symbol" aria-hidden="true">★</span>최근 우승 TOP 5</a>
+      <a class="menu-item" href="#artifacts" data-view="artifacts"><span class="menu-symbol" aria-hidden="true">◇</span>유물 티어</a>
+      <a class="menu-item" href="#emblems" data-view="emblems"><span class="menu-symbol" aria-hidden="true">⬡</span>상징 티어</a>
+    </nav>
+    <span class="sidebar-label">TOOLS & RESOURCES</span>
+    <nav aria-label="외부 도구">
+      <a class="menu-item" href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer"><span class="menu-symbol" aria-hidden="true">↗</span>유닛 통계</a>
+      <a class="menu-item" href="https://www.metatft.com/team-builder" target="_blank" rel="noopener noreferrer"><span class="menu-symbol" aria-hidden="true">↗</span>팀 빌더</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <p class="sidebar-note">여러 사이트의 메타를 한눈에.<br>↗ 메뉴는 원본 사이트로 이동합니다.</p>
+      <p class="sidebar-footer">TACTICS, SIMPLIFIED.</p>
+    </div>
     <p class="sidebar-note" id="copy-status" role="status" aria-live="polite"></p>
   </aside>
 
-  <!-- 메인 영역 (3단 분할) -->
+  <!-- 메인 영역 (반응형 소스별 카드) -->
   <main class="main-content" id="comps-view">
+    <header class="page-hero">
+      <div>
+        <p class="eyebrow">YOUR META OVERVIEW</p>
+        <h2>메타 덱 한눈에 보기</h2>
+        <p class="page-description">세 사이트의 추천 덱을 비교하고, 원하는 팀 구성을 바로 복사하세요.</p>
+      </div>
+      <span class="hero-badge">LIVE META TRACKER</span>
+    </header>
     
     <!-- 1. MetaTFT 컬럼 -->
     <div class="column">
