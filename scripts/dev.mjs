@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { sourceHandler } from '../lib/sources.js';
 import itemsHandler from '../lib/items.js';
 import recentWinsHandler from '../lib/recent-wins.js';
-const staticFiles = { '/': ['index.html', 'text/html'], '/index.html': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/theme.css': ['theme.css', 'text/css'] };
+const staticFiles = { '/': ['index.html', 'text/html'], '/index.html': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/theme.css': ['theme.css', 'text/css'], '/theme-toggle.js': ['theme-toggle.js', 'text/javascript'] };
 createServer(async (req, res) => {
   const path = new URL(req.url, 'http://localhost').pathname;
   const source = path.match(/^\/api\/(metatft|academy|dakgg|qq|items|recent-wins)$/)?.[1];

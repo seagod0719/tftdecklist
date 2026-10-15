@@ -4,9 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TFT 메타 애그리게이터</title>
+  <script>
+    // Apply a saved choice before rendering so light mode never flashes dark.
+    try {
+      if (localStorage.getItem('tft-theme') === 'light') {
+        document.documentElement.dataset.theme = 'light';
+      }
+    } catch (_) { /* Browsing without storage permission still works. */ }
+  </script>
   <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
+  <div class="theme-switch" role="group" aria-label="화면 테마 선택">
+    <button type="button" class="theme-option" data-theme-option="light"
+      aria-label="화이트 모드" aria-pressed="false" title="화이트 모드">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    </button>
+    <button type="button" class="theme-option" data-theme-option="dark"
+      aria-label="다크 모드" aria-pressed="true" title="다크 모드">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.98 13.09A9 9 0 0 1 10.91 3.02 9 9 0 1 0 20.98 13.09Z"/>
+      </svg>
+    </button>
+  </div>
 
   <!-- 탐색 메뉴 -->
   <aside class="sidebar">
@@ -52,21 +75,21 @@
       <div class="site-title">MetaTFT</div>
       
       <div class="tier-section">
-        <h3><span style="color: #ff4e50;">SS</span> 리스트</h3>
+        <h3><span class="tier-mark tier-ss">SS</span> 리스트</h3>
         <ul class="tier-list" id="metatft-ss-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
       
       <div class="tier-section">
-        <h3><span style="color: #f9a826;">S</span> 리스트</h3>
+        <h3><span class="tier-mark tier-s">S</span> 리스트</h3>
         <ul class="tier-list" id="metatft-s-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
 
       <div class="tier-section">
-        <h3><span style="color: #4a90e2;">A</span> 리스트</h3>
+        <h3><span class="tier-mark tier-a">A</span> 리스트</h3>
         <ul class="tier-list" id="metatft-a-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
@@ -78,21 +101,21 @@
       <div class="site-title">TFT Academy</div>
       
       <div class="tier-section">
-        <h3><span style="color: #ff4e50;">SS</span> 리스트</h3>
+        <h3><span class="tier-mark tier-ss">SS</span> 리스트</h3>
         <ul class="tier-list" id="academy-ss-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
       
       <div class="tier-section">
-        <h3><span style="color: #f9a826;">S</span> 리스트</h3>
+        <h3><span class="tier-mark tier-s">S</span> 리스트</h3>
         <ul class="tier-list" id="academy-s-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
 
       <div class="tier-section">
-        <h3><span style="color: #4a90e2;">A</span> 리스트</h3>
+        <h3><span class="tier-mark tier-a">A</span> 리스트</h3>
         <ul class="tier-list" id="academy-a-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
@@ -104,21 +127,21 @@
       <div class="site-title">DAK.GG · 롤체지지</div>
       
       <div class="tier-section">
-        <h3><span style="color: #ff4e50;">S</span> 리스트</h3>
+        <h3><span class="tier-mark tier-s">S</span> 리스트</h3>
         <ul class="tier-list" id="dakgg-s-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
       
       <div class="tier-section">
-        <h3><span style="color: #f9a826;">A</span> 리스트</h3>
+        <h3><span class="tier-mark tier-a">A</span> 리스트</h3>
         <ul class="tier-list" id="dakgg-a-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
       </div>
 
       <div class="tier-section">
-        <h3><span style="color: #4a90e2;">B</span> 리스트</h3>
+        <h3><span class="tier-mark tier-b">B</span> 리스트</h3>
         <ul class="tier-list" id="dakgg-b-list">
           <li class="tier-item">로딩 중...</li>
         </ul>
@@ -128,6 +151,7 @@
   </main>
 <main id="items-view" hidden></main>
 <main id="recent-wins-view" hidden aria-live="polite"></main>
+<script type="module" src="/theme-toggle.js"></script>
 <script type="module" src="/app.js"></script>
 </body>
 </html>
