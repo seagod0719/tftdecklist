@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { loadSource } from '../lib/sources.js';
 import { loadItems } from '../lib/items.js';
-await Promise.all(['metatft', 'academy', 'qq'].map(async source => {
+await Promise.all(['metatft', 'academy', 'dakgg'].map(async source => {
   const data = await loadSource(source);
   assert.ok(data.comps.length, `${source}: empty response`);
   for (const comp of data.comps) {
