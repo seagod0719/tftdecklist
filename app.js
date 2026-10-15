@@ -1,4 +1,4 @@
-const sources = { metatft: 'MetaTFT', academy: 'TFT Academy', qq: 'LOL QQ' };
+const sources = { metatft: 'MetaTFT', academy: 'TFT Academy', dakgg: 'DAK.GG · 롤체지지' };
 const tiers = ['SS', 'S', 'A'];
 const status = document.getElementById('copy-status');
 function element(tag, text, className) {
@@ -13,6 +13,8 @@ function card(comp) {
   header.append(element('span', comp.name));
   const meta = element('span', '', 'comp-meta');
   if (Number.isFinite(comp.avgPlacement)) meta.append(element('span', `평균 ${comp.avgPlacement.toFixed(2)}등`, 'comp-note'));
+  if (Number.isFinite(comp.winRate)) meta.append(element('span', `1위 ${comp.winRate.toFixed(1)}%`, 'comp-note'));
+  if (Number.isFinite(comp.topRate)) meta.append(element('span', `TOP4 ${comp.topRate.toFixed(1)}%`, 'comp-note'));
   const units = element('div', '', 'comp-units');
   comp.units.forEach(unit => {
     const tile = element('span', '', 'unit');
@@ -47,7 +49,8 @@ function card(comp) {
 }
 
 async function load(source) {
-  const lists = Object.fromEntries(tiers.map(tier => [tier, document.getElementById(`${source}-${tier.toLowerCase()}-list`)]));
+  const displayTiers = source === 'dakgg' ? ['S', 'A', 'B'] : tiers;
+  const lists = Object.fromEntries(displayTiers.map(tier => [tier, document.getElementById(`${source}-${tier.toLowerCase()}-list`)]));
   const column = lists.SS.closest('.column');
   let note = column.querySelector('.source-status');
   if (!note) { note = element('div', '', 'source-status'); note.setAttribute('aria-live', 'polite'); column.querySelector('.site-title').after(note); }
@@ -58,8 +61,8 @@ async function load(source) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || '데이터를 불러오지 못했습니다.');
     if (!Array.isArray(data.comps)) throw new Error('잘못된 데이터 응답입니다.');
-    note.textContent = `${data.set} · ${data.comps.length}개 덱 수집 · SS/S/A 각각 최대 10개 표시 · ${new Date(data.fetchedAt).toLocaleString('ko-KR')}\n${data.tierNote}`;
-    tiers.forEach(tier => {
+    note.textContent = `${data.set}${data.patch ? ` · 패치 ${data.patch}` : ''} · ${data.comps.length}개 덱 수집 · ${displayTiers.join('/')} 각각 최대 10개 표시 · ${new Date(data.fetchedAt).toLocaleString('ko-KR')}\n${data.tierNote}`;
+    displayTiers.forEach(tier => {
       const comps = data.comps.filter(comp => comp.tier === tier).slice(0, 10);
       lists[tier].replaceChildren(...(comps.length ? comps.map(card) : [element('li', '해당 티어의 덱이 없습니다.', 'tier-item')]));
     });
