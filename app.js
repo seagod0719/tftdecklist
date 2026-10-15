@@ -51,7 +51,7 @@ function card(comp) {
 async function load(source) {
   const displayTiers = source === 'dakgg' ? ['S', 'A', 'B'] : tiers;
   const lists = Object.fromEntries(displayTiers.map(tier => [tier, document.getElementById(`${source}-${tier.toLowerCase()}-list`)]));
-  const column = lists.SS.closest('.column');
+  const column = lists[displayTiers[0]].closest('.column');
   let note = column.querySelector('.source-status');
   if (!note) { note = element('div', '', 'source-status'); note.setAttribute('aria-live', 'polite'); column.querySelector('.site-title').after(note); }
   note.textContent = `${sources[source]} 연결 중…`;
