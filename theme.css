@@ -466,7 +466,7 @@ button:focus-visible, a:focus-visible {
   border-radius: 6px;
   object-fit: cover;
 }
-#recent-wins-view > .tier-list {
+#recent-wins-content > .tier-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
@@ -735,4 +735,18 @@ html[data-theme="light"] #copy-status:not(:empty) {
 }
 @media (prefers-reduced-motion: reduce) {
   .comps-refresh-btn[aria-busy="true"] svg { animation: none; }
+}
+
+/* Shared page header: refresh button has identical top/right anchor in both tabs. */
+.page-hero { align-items: flex-start; }
+#recent-wins-view {
+  padding: 36px clamp(18px, 2.6vw, 42px) 56px;
+}
+#recent-wins-view > .page-hero { margin-bottom: 25px; }
+#recent-wins-content > * { margin-bottom: 16px; }
+#recent-wins-content > .tier-list { margin-top: 20px; }
+@media (max-width: 760px) {
+  #recent-wins-view { padding: 25px 13px 42px; }
+  #recent-wins-view > .page-hero { margin-bottom: 20px; }
+  #recent-wins-content > .tier-list { grid-template-columns: 1fr; }
 }
