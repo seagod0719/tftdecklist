@@ -688,7 +688,7 @@ html[data-theme="light"] #copy-status:not(:empty) {
   .brand { padding-right: 95px; }
 }
 
-/* Decklist-only refresh controls in the overview header. */
+/* Shared refresh controls for the decklist and recent wins headers. */
 .page-hero { padding-top: 23px; }
 .hero-actions {
   display: flex;
@@ -749,4 +749,11 @@ html[data-theme="light"] #copy-status:not(:empty) {
   #recent-wins-view { padding: 25px 13px 42px; }
   #recent-wins-view > .page-hero { margin-bottom: 20px; }
   #recent-wins-content > .tier-list { grid-template-columns: 1fr; }
+}
+
+/* Keep the same right-aligned controls on narrow screens without text overflow. */
+@media (max-width: 760px) {
+  .page-hero { flex-direction: column; gap: 14px; }
+  .hero-actions { width: 100%; align-items: flex-end; }
+  .comps-refresh-time, .comps-refresh-hint { text-align: right; }
 }
