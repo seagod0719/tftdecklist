@@ -687,3 +687,52 @@ html[data-theme="light"] #copy-status:not(:empty) {
   .theme-switch { top: 16px; right: 13px; }
   .brand { padding-right: 95px; }
 }
+
+/* Decklist-only refresh controls in the overview header. */
+.page-hero { padding-top: 23px; }
+.hero-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.hero-actions .hero-badge { margin: 0 0 4px; }
+.comps-refresh-btn {
+  gap: 7px;
+  margin: 0;
+  padding: 9px 15px;
+  min-height: 36px;
+  font-size: 12px;
+}
+.comps-refresh-btn svg { flex: 0 0 auto; }
+.comps-refresh-btn:disabled { opacity: .65; cursor: wait; }
+.comps-refresh-btn[aria-busy="true"] svg { animation: comps-loading-spin 1.25s linear infinite; }
+.comps-refresh-time {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.comps-refresh-hint {
+  margin: 0;
+  color: var(--subtle);
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: right;
+}
+@keyframes comps-loading-spin { to { transform: rotate(360deg); } }
+@media (max-width: 760px) {
+  .page-hero { padding-top: 0; }
+  .hero-actions { align-items: flex-start; }
+  .comps-refresh-time, .comps-refresh-hint { text-align: left; }
+}
+@media (max-width: 420px) {
+  .hero-actions { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .comps-refresh-btn[aria-busy="true"] svg { animation: none; }
+}

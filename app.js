@@ -1,6 +1,10 @@
 const sources = { metatft: 'MetaTFT', academy: 'TFT Academy', dakgg: 'DAK.GG · 롤체지지' };
 const tiers = ['SS', 'S', 'A'];
 const status = document.getElementById('copy-status');
+const compsRefreshButton = document.getElementById('comps-refresh-btn');
+const compsRefreshTime = document.getElementById('comps-refresh-time');
+const successfulSources = new Set();
+let refreshingComps = false;
 function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text) node.textContent = text;
@@ -54,10 +58,12 @@ async function load(source) {
   const column = lists[displayTiers[0]].closest('.column');
   let note = column.querySelector('.source-status');
   if (!note) { note = element('div', '', 'source-status'); note.setAttribute('aria-live', 'polite'); column.querySelector('.site-title').after(note); }
-  note.textContent = `${sources[source]} 연결 중…`;
-  Object.values(lists).forEach(list => list.replaceChildren(element('li', '로딩 중…', 'tier-item')));
+  const hasPreviousData = successfulSources.has(source);
+  note.textContent = `${sources[source]} ${hasPreviousData ? '다시 확인 중…' : '연결 중…'}`;
+  // Preserve the previous list while waiting for a manual refresh.
+  if (!hasPreviousData) Object.values(lists).forEach(list => list.replaceChildren(element('li', '로딩 중…', 'tier-item')));
   try {
-    const response = await fetch(`/api/${source}`, { signal: AbortSignal.timeout(55000) });
+    const response = await fetch(`/api/${source}`, { signal: AbortSignal.timeout(55000), cache: 'no-store' });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || '데이터를 불러오지 못했습니다.');
     if (!Array.isArray(data.comps)) throw new Error('잘못된 데이터 응답입니다.');
@@ -66,14 +72,40 @@ async function load(source) {
       const comps = data.comps.filter(comp => comp.tier === tier).slice(0, 10);
       lists[tier].replaceChildren(...(comps.length ? comps.map(card) : [element('li', '해당 티어의 덱이 없습니다.', 'tier-item')]));
     });
+    successfulSources.add(source);
+    return { source, ok: true };
   } catch (error) {
     note.textContent = `불러오기 실패: ${error.message}`;
     const retry = element('button', '다시 시도', 'retry-btn');
-    retry.addEventListener('click', () => load(source)); note.append(retry);
-    Object.values(lists).forEach(list => list.replaceChildren(element('li', '원본 연결을 확인한 뒤 다시 시도하세요.', 'tier-item')));
+    retry.addEventListener('click', refreshComps); note.append(retry);
+    // If only one source fails, do not discard the previously visible decks.
+    if (!hasPreviousData) Object.values(lists).forEach(list => list.replaceChildren(element('li', '원본 연결을 확인한 뒤 다시 시도하세요.', 'tier-item')));
+    return { source, ok: false };
   }
 }
-Promise.allSettled(Object.keys(sources).map(load));
+
+async function refreshComps() {
+  if (refreshingComps) return;
+  refreshingComps = true;
+  compsRefreshButton.disabled = true;
+  compsRefreshButton.setAttribute('aria-busy', 'true');
+  compsRefreshTime.textContent = '마지막 확인: 확인 중…';
+  try {
+    const results = await Promise.all(Object.keys(sources).map(load));
+    const succeeded = results.filter(result => result.ok).length;
+    const checkedAt = new Date().toLocaleString('ko-KR');
+    compsRefreshTime.textContent = `마지막 확인: ${checkedAt} · ${succeeded}/${results.length}개 사이트 성공`;
+  } catch (error) {
+    // Unexpected UI errors are visible and do not leave the refresh button locked.
+    compsRefreshTime.textContent = `새로고침 실패: ${error.message}`;
+  } finally {
+    refreshingComps = false;
+    compsRefreshButton.disabled = false;
+    compsRefreshButton.removeAttribute('aria-busy');
+  }
+}
+compsRefreshButton.addEventListener('click', refreshComps);
+refreshComps();
 
 function portrait(src, name) {
   const img = element('img');

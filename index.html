@@ -67,7 +67,17 @@
         <h2>메타 덱 한눈에 보기</h2>
         <p class="page-description">세 사이트의 추천 덱을 비교하고, 원하는 팀 구성을 바로 복사하세요.</p>
       </div>
-      <span class="hero-badge">LIVE META TRACKER</span>
+      <div class="hero-actions">
+        <span class="hero-badge">LIVE META TRACKER</span>
+        <button type="button" class="retry-btn comps-refresh-btn" id="comps-refresh-btn" aria-controls="metatft-ss-list academy-ss-list dakgg-s-list">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 11a8 8 0 1 0-2.34 5.66"/><path d="M20 4v7h-7"/>
+          </svg>
+          <span>새로고침</span>
+        </button>
+        <p class="comps-refresh-time" id="comps-refresh-time" role="status" aria-live="polite">마지막 확인: 조회 중…</p>
+        <p class="comps-refresh-hint">원본 수집 시각은 각 사이트에 표시 · 5분 캐시</p>
+      </div>
     </header>
     
     <!-- 1. MetaTFT 컬럼 -->
